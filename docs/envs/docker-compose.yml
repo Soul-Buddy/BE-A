@@ -1,0 +1,77 @@
+# ============================================================
+# docker-compose.yml — Soul Buddy 로컬 개발 환경
+# 담당: BE-C 헌영
+# 용도: MySQL 로컬 실행 전용 (Spring Boot는 IDE에서 직접 실행)
+# 실행: docker-compose up -d
+# 종료: docker-compose down
+# ============================================================
+
+version: '3.8'
+
+services:
+
+  # ── MySQL ──────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: soulbuddy-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      # ⚠️ DB명: soul_buddy (언더스코어 포함) — soul_buddy_schema_v2.sql 정본 기준
+      MYSQL_DATABASE: soul_buddy
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d   # 초기 SQL 파일 위치 (선택)
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=Asia/Seoul
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Spring Boot (로컬 통합 테스트용 — 평소엔 IDE 직접 실행 권장) ──
+  # 아래 app 서비스는 주석 처리 상태입니다.
+  # 전체 통합 테스트가 필요할 때만 주석 해제 후 사용하세요.
+  #
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: soulbuddy-app
+  #   restart: unless-stopped
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
+  #   environment:
+  #     # ⚠️ DB명: soul_buddy (언더스코어 포함)
+  #     DB_URL: jdbc:mysql://mysql:3306/soul_buddy?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+  #     DB_USERNAME: root
+  #     DB_PASSWORD: root
+  #     OPENAI_API_KEY: ${OPENAI_API_KEY}
+  #     GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+  #     GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+  #     KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+  #     KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+  #     JWT_SECRET: ${JWT_SECRET}
+  #     CORS_ORIGIN: http://localhost:3000
+  #     SERVER_PORT: 8080
+  #     SPRING_PROFILES_ACTIVE: local
+  #   ports:
+  #     - "8080:8080"
+
+volumes:
+  mysql_data:
+
+# ============================================================
+# 팀 공통 주의사항
+# - MySQL 포트 3306이 이미 사용 중이면 "3307:3306"으로 변경
+# - Spring Boot는 application-local.yml의 localhost:3306으로 접속
+# - .env 파일을 루트에 만들어 환경변수 관리 (아래 .env.example 참조)
+# ============================================================
