@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class LlmSingleCallTest {
 
-    private static final String API_KEY = "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";
+    private static final String API_KEY = System.getenv("OPENAI_API_KEY");
 
     public static void main(String[] args) {
         WebClient client = WebClient.builder()
