@@ -11,10 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Tag(name = "Auth", description = "인증")
 @RestController
@@ -23,6 +22,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    // 임시 테스트용 — Google OAuth 완료 후 토큰 확인
+    @GetMapping("/callback")
+    public ResponseEntity<Map<String, Object>> callback(
+            @RequestParam String accessToken,
+            @RequestParam String refreshToken,
+            @RequestParam Long userId,
+            @RequestParam boolean isNewUser) {
+        return ResponseEntity.ok(Map.of(
+                "accessToken", accessToken,
+                "refreshToken", refreshToken,
+                "userId", userId,
+                "isNewUser", isNewUser
+        ));
+    }
 
     @Operation(summary = "토큰 갱신", description = "Refresh Token으로 새 Access Token을 발급합니다.")
     @PostMapping("/refresh")

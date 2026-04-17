@@ -41,7 +41,8 @@ jwt:
   expiration-ms: 86400000  # 24h
 
 cors:
-  allowed-origin: ${CORS_ORIGIN:http://localhost:3000}
+  allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
 
 springdoc:
   api-docs:
