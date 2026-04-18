@@ -29,10 +29,10 @@ server:
   port: ${SERVER_PORT:8080}
 
 ai:
-  openai:
-    api-key: ${OPENAI_API_KEY}
-    base-url: https://api.openai.com/v1
-    model: gpt-4o
+  clovax:
+    api-key: ${CLOVAX_API_KEY}
+    base-url: https://clovastudio.stream.ntruss.com/v1
+    model: HCX-003
     timeout-seconds: 30
     max-retries: 2
 
