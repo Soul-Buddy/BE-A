@@ -1,0 +1,34 @@
+name: Java CD with GitHub Actions
+
+on:
+  workflow_run:
+    workflows: ["Java CI with Gradle"]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact # 혹은 CI 단계에서 빌드 후 바로 전송 가능
+        uses: actions/download-artifact@v4
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "build/libs/*.jar"
+          target: "/home/ubuntu/app"
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo fuser -k 8080/tcp || true
+            nohup java -jar /home/ubuntu/app/build/libs/*.jar > /dev/null 2>&1 &
