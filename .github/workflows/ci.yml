@@ -18,11 +18,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      # application.yml 생성
       - name: Make application.yml
         run: |
           mkdir -p ./backend/src/main/resources
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./backend/src/main/resources/application.yml
 
+      # backend 폴더 안의 gradlew에 권한 부여 및 빌드
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: ./backend
@@ -31,10 +33,11 @@ jobs:
         run: ./gradlew build -x test
         working-directory: ./backend
 
+      # 빌드된 JAR 파일을 아티팩트로 저장
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend-jar
-          # 💡 [핵심] plain이 붙지 않은 진짜 실행용 jar만 업로드
+          # plain이 붙지 않은 실행 가능한 jar만 업로드
           path: backend/build/libs/*[!plain].jar
           if-no-files-found: error

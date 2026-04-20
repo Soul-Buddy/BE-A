@@ -15,40 +15,30 @@ jobs:
       contents: read
 
     steps:
-      # 1. 아티팩트 목록 확인 (디버깅용)
-      - name: List available artifacts
-        run: |
-          echo "Workflow Run ID: ${{ github.event.workflow_run.id }}"
-          curl -s \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/artifacts" \
-            | jq '.artifacts[] | {name: .name, id: .id, expired: .expired}'
-
-      # 2. CI 워크플로우에서 생성된 Artifact 다운로드
+      # 1. CI에서 생성된 Artifact 다운로드
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: backend-jar
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          # 특별히 path를 지정하지 않으면 루트에 backend/build/libs/... 구조로 풀립니다.
+          path: ./downloaded_artifact # 찾기 쉽게 특정 폴더에 다운로드
 
-      # 3. EC2로 JAR 파일 전송
+      # 2. EC2로 JAR 파일 전송
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # 현재 구조에 맞춰 경로 수정
-          source: "backend/build/libs/*.jar"
+          # '**/*.jar'를 쓰면 어떤 폴더에 있든 모든 .jar를 찾습니다.
+          source: "**/*.jar"
           target: "/home/ubuntu/app"
-          # 'backend/build/libs/' 3개의 폴더 구조를 제거하고 파일만 전송
-          strip_components: 3
+          # 모든 상위 폴더 구조를 제거하고 파일명만 전송
+          strip_components: 10
           rm: true
 
-      # 4. EC2에서 애플리케이션 실행
+      # 3. EC2에서 애플리케이션 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -56,8 +46,15 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # 8080 포트를 사용 중인 기존 프로세스 종료
             sudo fuser -k 8080/tcp || true
-            # 기존 jar 파일 정리 (선택 사항)
-            rm -rf /home/ubuntu/app/*.jar.old 
-            # 실행 (로그는 app.log에 기록)
+            
+            # 이전 JAR 파일 삭제 (깔끔한 배포를 위해)
+            rm -rf /home/ubuntu/app/*.jar.old
+            
+            # 백그라운드 실행 및 로그 기록
             nohup java -jar /home/ubuntu/app/*.jar > /home/ubuntu/app/app.log 2>&1 &
+            
+            # 실행 확인 (3초 후 프로세스 떠있는지 확인)
+            sleep 3
+            ps -ef | grep java
