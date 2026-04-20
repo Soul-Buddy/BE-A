@@ -8,23 +8,21 @@ on:
 
 jobs:
   deploy:
-    # 💡 CI가 성공했을 때만 배포 시작
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      # 💡 run-id를 통해 방금 끝난 그 CI의 결과물을 정확히 가져옴
+      # 💡 [핵심] CI가 끝나고 아티팩트가 시스템에 등록될 시간을 위해 잠시 대기 (안정성 확보)
+      - name: Wait for GitHub Artifacts to be ready
+        run: sleep 20
+
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: backend-jar
+          # 💡 [핵심] github.event.workflow_run.id를 통해 정확한 실행 시점의 파일을 지정
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # [디버깅용] 다운로드가 제대로 됐는지 파일 목록 확인
-      - name: Display structure of downloaded files
-        run: ls -R
-
-      # EC2로 복사
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@master
         with:
@@ -33,9 +31,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "*.jar"
           target: "/home/ubuntu/app"
-          rm: true # 기존 파일 싹 비우고 전송
+          rm: true
 
-      # 서버 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
