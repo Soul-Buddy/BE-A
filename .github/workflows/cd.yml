@@ -38,6 +38,9 @@ jobs:
           strip_components: 10
           rm: true
 
+      - name: Check file location
+        run: ls -R ./downloaded_artifact
+
       # 3. EC2에서 애플리케이션 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
