@@ -8,11 +8,11 @@ on:
 
 jobs:
   deploy:
-    # CI 워크플로우가 성공했을 때만 실행
+    # 💡 CI가 성공했을 때만 배포 시작
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      # CI 결과물 다운로드
+      # 💡 run-id를 통해 방금 끝난 그 CI의 결과물을 정확히 가져옴
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
@@ -20,11 +20,11 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 다운로드된 파일 확인용 로그
+      # [디버깅용] 다운로드가 제대로 됐는지 파일 목록 확인
       - name: Display structure of downloaded files
         run: ls -R
 
-      # EC2로 파일 복사
+      # EC2로 복사
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@master
         with:
@@ -33,9 +33,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "*.jar"
           target: "/home/ubuntu/app"
-          rm: true # 기존 구버전 파일 삭제
+          rm: true # 기존 파일 싹 비우고 전송
 
-      # 서버 재시작
+      # 서버 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:

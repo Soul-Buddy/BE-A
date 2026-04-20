@@ -18,13 +18,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # 설정 파일 생성 (backend 폴더 내 위치)
+      # 설정 파일 생성 (backend 경로 포함)
       - name: Make application.yml
         run: |
           mkdir -p ./backend/src/main/resources
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./backend/src/main/resources/application.yml
 
-      # 권한 부여 및 빌드
+      # 권한 부여 및 빌드 (working-directory 반드시 backend)
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: ./backend
@@ -33,13 +33,14 @@ jobs:
         run: ./gradlew build -x test
         working-directory: ./backend
 
-      # 빌드된 파일이 실제로 있는지 로그로 확인 (디버깅용)
+      # [디버깅용] 빌드 결과물이 실제 어느 폴더에 생겼는지 로그로 보여줌
       - name: Check Build Result
-        run: ls -l backend/build/libs/
+        run: ls -R backend/build/libs/
 
-      # 💡 이 부분이 핵심입니다! 경로를 정확히 찍어줘야 CD가 찾을 수 있습니다.
+      # 💡 핵심: 빌드된 jar 파일을 깃허브 공용 보관소에 'backend-jar'라는 이름으로 업로드
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend-jar
+          # plain이 안 붙은 진짜 실행용 jar 파일만 골라서 업로드
           path: backend/build/libs/*[!plain].jar
