@@ -14,7 +14,11 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: backend-jar  # CI에서 업로드한 이름과 동일하게
+          name: backend-jar
+          # 💡 중요: CI 워크플로우의 실행 ID를 명시해서 정확한 파일을 찾게 합니다.
+          run-id: ${{ github.event.workflow_run.id }}
+          # 💡 중요: 다른 워크플로우의 결과물을 가져오기 위한 권한 토큰입니다.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@master
@@ -22,8 +26,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # artifact를 다운로드하면 폴더 구조가 바뀔 수 있으니 경로 확인 필요
-          source: "*.jar"
+          source: "*.jar" # artifact 다운로드 시 현재 폴더에 바로 풀립니다.
           target: "/home/ubuntu/app"
 
       - name: Deploy to EC2
@@ -34,5 +37,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo fuser -k 8080/tcp || true
-            # EC2에 저장된 위치에서 실행
+            # 💡 기존 app 폴더 내 구버전 jar 삭제 후 실행 (권장)
+            # nohup java -jar /home/ubuntu/app/*.jar > /dev/null 2>&1 &
+            # 만약 위 코드가 안되면 파일명을 명시하거나 와일드카드를 유지하세요.
             nohup java -jar /home/ubuntu/app/*.jar > /dev/null 2>&1 &
