@@ -12,7 +12,7 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
-      # CI에서 만든 파일 다운로드 (run-id와 token 필수)
+      # CI 결과물 다운로드
       - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
@@ -20,11 +20,11 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # 다운로드된 파일 목록 확인 (디버깅용)
+      # 다운로드된 파일 확인용 로그
       - name: Display structure of downloaded files
         run: ls -R
 
-      # EC2로 JAR 파일 복사
+      # EC2로 파일 복사
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@master
         with:
@@ -33,9 +33,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "*.jar"
           target: "/home/ubuntu/app"
-          rm: true # 전송 전 target 폴더 비우기
+          rm: true # 기존 구버전 파일 삭제
 
-      # EC2에서 서버 실행
+      # 서버 재시작
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:

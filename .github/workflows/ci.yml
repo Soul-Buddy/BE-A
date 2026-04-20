@@ -18,13 +18,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # 설정 파일 생성 (backend 경로 포함)
+      # 설정 파일 생성 (backend 폴더 내 위치)
       - name: Make application.yml
         run: |
           mkdir -p ./backend/src/main/resources
           echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./backend/src/main/resources/application.yml
 
-      # 권한 부여 및 빌드 (working-directory 설정 필수)
+      # 권한 부여 및 빌드
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         working-directory: ./backend
@@ -33,11 +33,11 @@ jobs:
         run: ./gradlew build -x test
         working-directory: ./backend
 
-      # 빌드 결과 확인용 로그 (파일이 안 올라갈 때 확인용)
+      # 빌드된 파일이 실제로 있는지 로그로 확인 (디버깅용)
       - name: Check Build Result
         run: ls -l backend/build/libs/
 
-      # 아티팩트 업로드 (plain.jar 제외하고 업로드)
+      # 💡 이 부분이 핵심입니다! 경로를 정확히 찍어줘야 CD가 찾을 수 있습니다.
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
