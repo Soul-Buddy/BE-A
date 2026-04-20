@@ -15,7 +15,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       # 1. 파일이 어디 있는지 확인용 로그 (에러 시 확인용)
