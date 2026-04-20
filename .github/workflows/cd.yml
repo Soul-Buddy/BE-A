@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       actions: read
-      contents: read # 추가 권한 (일반적으로 필요)
+      contents: read
 
     steps:
       # 1. 아티팩트 목록 확인 (디버깅용)
@@ -32,7 +32,7 @@ jobs:
           name: backend-jar
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          # path: ./ # 필요 시 다운로드 경로 지정
+          # 특별히 path를 지정하지 않으면 루트에 backend/build/libs/... 구조로 풀립니다.
 
       # 3. EC2로 JAR 파일 전송
       - name: Copy JAR to EC2
@@ -41,9 +41,11 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "build/libs/*.jar" # Gradle 기본 경로 확인 필요
+          # 현재 구조에 맞춰 경로 수정
+          source: "backend/build/libs/*.jar"
           target: "/home/ubuntu/app"
-          strip_components: 2 # build/libs 폴더 구조를 제외하고 파일만 전송
+          # 'backend/build/libs/' 3개의 폴더 구조를 제거하고 파일만 전송
+          strip_components: 3
           rm: true
 
       # 4. EC2에서 애플리케이션 실행
@@ -55,4 +57,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             sudo fuser -k 8080/tcp || true
+            # 기존 jar 파일 정리 (선택 사항)
+            rm -rf /home/ubuntu/app/*.jar.old 
+            # 실행 (로그는 app.log에 기록)
             nohup java -jar /home/ubuntu/app/*.jar > /home/ubuntu/app/app.log 2>&1 &
