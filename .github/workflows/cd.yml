@@ -28,20 +28,6 @@ jobs:
       - name: Check file location
         run: ls -R ./downloaded_artifact
 
-      # 3. EC2로 JAR 파일 전송
-      - name: Copy JAR to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          # 💡 다운로드한 폴더 내의 모든 하위 폴더에서 .jar를 찾습니다.
-          source: "downloaded_artifact/**/*.jar"
-          target: "/home/ubuntu/app"
-          # 💡 폴더 구조가 아무리 깊어도 파일명만 남기고 서버에 올립니다.
-          strip_components: 10
-          rm: true
-
       # 4. EC2에서 애플리케이션 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
