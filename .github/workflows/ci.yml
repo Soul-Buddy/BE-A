@@ -12,11 +12,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 21 (Corretto)
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin'
+          distribution: 'corretto' # Corretto로 변경
+          cache: 'gradle'        # 빌드 속도 향상을 위한 캐싱 추가
 
       - name: Make application.yml
         run: |
@@ -28,3 +29,10 @@ jobs:
 
       - name: Build & Test with Gradle
         run: ./gradlew build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: build/libs/*[!plain].jar
+          if-no-files-found: error
