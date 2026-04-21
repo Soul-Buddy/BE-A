@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
 
-# [핵심 추가] 모든 run 명령어를 backend 폴더 기준으로 실행
+# 모든 run 명령어를 backend 폴더 기준으로 실행
 defaults:
   run:
     working-directory: ./backend
@@ -24,7 +24,6 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
           cache: 'gradle'
-          # [추가] 캐시 기준 파일 경로 지정
           cache-dependency-path: './backend/build.gradle'
 
       # 2. GitHub Secrets에서 application.yml 생성
@@ -41,26 +40,22 @@ jobs:
         run: ./gradlew build -x test
 
       # 4. DockerHub 로그인
-      # 이 단계는 working-directory 영향 없이 actions 기반으로 돌아가므로 그대로 둡니다.
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-            
-            # 5. Docker 이미지 빌드 및 푸시
-                      - name: Build & Push Docker Image
-                      uses: docker/build-push-action@v5
-                      with:
-                        # context를 ./backend로 잡으면, Dockerfile 안의 COPY 명령어가
-                        # backend 폴더 내부를 기준으로 동작하게 됨
-                        context: ./backend
-                        # file 경로는 context 내부 기준이 아니라, 워크플로우 실행 위치(루트) 기준임
-                        file: ./backend/Dockerfile
-                        push: true
-                        tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
-          # 6. EC2 접속 및 배포 실행
+      # 5. Docker 이미지 빌드 및 푸시 (들여쓰기 수정 완료)
+      - name: Build & Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+
+      # 6. EC2 접속 및 배포 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
