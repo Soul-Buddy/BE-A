@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main" ]
 
-# [핵심 추가] 모든 run 명령어를 backend 폴더 기준으로 실행
+# run 명령어를 backend 폴더 기준으로 실행 (gradlew, mkdir 등)
 defaults:
   run:
     working-directory: ./backend
@@ -24,24 +24,23 @@ jobs:
           java-version: '21'
           distribution: 'corretto'
           cache: 'gradle'
-          # [추가] 캐시 기준 파일 경로 지정
           cache-dependency-path: './backend/build.gradle'
 
       # 2. GitHub Secrets에서 application.yml 생성
+      # working-directory가 ./backend이므로 경로는 ./src/main/... 가 맞습니다.
       - name: Make application.yml
         run: |
           mkdir -p ./src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
 
+      # 3. Gradle 빌드 (테스트 제외)
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 3. Gradle 빌드 (테스트 제외)
       - name: Build with Gradle (skip test)
         run: ./gradlew build -x test
 
       # 4. DockerHub 로그인
-      # 이 단계는 working-directory 영향 없이 actions 기반으로 돌아가므로 그대로 둡니다.
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
@@ -49,15 +48,16 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       # 5. Docker 이미지 빌드 및 푸시
+      # 중요: context와 file 경로를 프로젝트 루트 기준의 상대 경로로 지정합니다.
       - name: Build & Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME}}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
-          # 6. EC2 접속 및 배포 실행
+      # 6. EC2 접속 및 배포 실행
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -68,7 +68,7 @@ jobs:
             # 최신 이미지 가져오기
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
 
-            # 기존 컨테이너 중지 및 삭제
+            # 기존 컨테이너 중지 및 삭제 (실패해도 무시하도록 || true 유지)
             docker stop backend || true
             docker rm backend || true
 
