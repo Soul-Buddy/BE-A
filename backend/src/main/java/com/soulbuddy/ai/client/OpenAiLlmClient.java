@@ -18,43 +18,47 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OpenAiLlmClient implements LlmClient {
 
-    private final WebClient openAiWebClient;
+    private final WebClient clovaxWebClient;
 
-    @Value("${ai.openai.model:gpt-4o}")
+    @Value("${ai.clovax.model:HCX-003}")
     private String model;
 
-    @Value("${ai.openai.timeout-seconds:30}")
+    @Value("${ai.clovax.timeout-seconds:30}")
     private int timeoutSeconds;
 
-    @Value("${ai.openai.max-retries:2}")
+    @Value("${ai.clovax.max-retries:2}")
     private int maxRetries;
 
     @Override
     public String call(List<Map<String, String>> messages) {
         Map<String, Object> requestBody = Map.of(
-                "model", model,
                 "messages", messages,
+                "maxTokens", 800,
                 "temperature", 0.7,
-                "max_tokens", 800,
-                "response_format", Map.of("type", "json_object")
+                "topK", 0,
+                "topP", 0.8,
+                "repeatPenalty", 5.0,
+                "stopBefore", List.of(),
+                "includeAiFilters", true,
+                "seed", 0
         );
 
         try {
-            return openAiWebClient.post()
-                    .uri("/chat/completions")
+            return clovaxWebClient.post()
+                    .uri("/chat-completions/" + model)
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(Map.class)
                     .timeout(Duration.ofSeconds(timeoutSeconds))
                     .retryWhen(Retry.backoff(maxRetries, Duration.ofSeconds(1)))
                     .map(response -> {
-                        List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
-                        Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+                        Map<String, Object> result = (Map<String, Object>) response.get("result");
+                        Map<String, Object> message = (Map<String, Object>) result.get("message");
                         return (String) message.get("content");
                     })
                     .block();
         } catch (Exception e) {
-            log.error("OpenAI API 호출 실패: {}", e.getMessage());
+            log.error("HyperCLOVA X API 호출 실패: {}", e.getMessage());
             throw new BusinessException(ErrorCode.AI_001);
         }
     }

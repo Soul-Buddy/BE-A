@@ -29,10 +29,10 @@ server:
   port: ${SERVER_PORT:8080}
 
 ai:
-  openai:
-    api-key: ${OPENAI_API_KEY}
-    base-url: https://api.openai.com/v1
-    model: gpt-4o
+  clovax:
+    api-key: ${CLOVAX_API_KEY}
+    base-url: https://clovastudio.stream.ntruss.com/v1
+    model: HCX-003
     timeout-seconds: 30
     max-retries: 2
 
@@ -41,7 +41,8 @@ jwt:
   expiration-ms: 86400000  # 24h
 
 cors:
-  allowed-origin: ${CORS_ORIGIN:http://localhost:3000}
+  allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
 
 springdoc:
   api-docs:
