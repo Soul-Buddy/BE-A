@@ -55,7 +55,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME
+          tags: ${{ secrets.DOCKERHUB_USERNAME}}
 
           # 6. EC2 접속 및 배포 실행
       - name: Deploy to EC2
