@@ -60,6 +60,14 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+jar {
+    enabled = false
+}
+
+bootJar {
+    enabled = true
+}
+
 task runLlmTest(type: JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'com.soulbuddy.LlmSingleCallTest'
