@@ -17,6 +17,10 @@ public enum ErrorCode {
     USER_001("USER_001", "사용자를 찾을 수 없습니다."),
     USER_002("USER_002", "이미 존재하는 이메일입니다."),
 
+    // Terms
+    TERMS_001("TERMS_001", "필수 약관에 동의해야 합니다."),
+    TERMS_002("TERMS_002", "이미 약관에 동의한 사용자입니다."),
+
     // Profile
     PROFILE_001("PROFILE_001", "프로필을 찾을 수 없습니다."),
 
