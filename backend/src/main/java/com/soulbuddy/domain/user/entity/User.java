@@ -39,6 +39,9 @@ public class User {
     @Builder.Default
     private Role role = Role.USER;
 
+    @Column(name = "terms_agreed_at")          // ← 추가
+    private LocalDateTime termsAgreedAt;       // ← 추가
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -46,4 +49,12 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public void agreeTerms() {
+        this.termsAgreedAt = LocalDateTime.now();
+    }
+
+    public boolean hasAgreedTerms() {
+        return this.termsAgreedAt != null;
+    }
 }

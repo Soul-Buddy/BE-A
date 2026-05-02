@@ -40,3 +40,4 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.failure(ErrorCode.COMMON_002));
     }
 }
+
