@@ -1,60 +1,67 @@
 package com.soulbuddy.domain.user.entity;
 
+import com.soulbuddy.global.enums.Gender;
 import com.soulbuddy.global.enums.Provider;
-import com.soulbuddy.global.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Entity
 @Table(name = "users")
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false, length = 100)
     private String nickname;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    private Gender gender;
+
+    // 1. 소셜 로그인 공급자 (GOOGLE, KAKAO 등)
+    @Enumerated(EnumType.STRING)
     private Provider provider;
 
-    @Column(name = "provider_id", nullable = false)
+    // 2. 소셜 로그인 고유 ID (식별값) 추가 -> 이 부분이 없어서 에러가 난 것입니다.
     private String providerId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    @Builder.Default
-    private Role role = Role.USER;
+    private String job;
 
-    @Column(name = "terms_agreed_at")          // ← 추가
-    private LocalDateTime termsAgreedAt;       // ← 추가
+    private String ageGroup;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
+    private String profileImageUrl;
+
+    private boolean dailyCheckInAlarm;
+
+    private boolean cheerMessageAlarm;
+
+    private String email;
+
+    private String password;
+
+    private boolean termsAgreed;
+
+    private LocalDateTime termsAgreedAt;
+
+    @CreatedDate
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-
-    public void agreeTerms() {
-        this.termsAgreedAt = LocalDateTime.now();
-    }
+    // --- 비즈니스 로직 메서드 ---
 
     public boolean hasAgreedTerms() {
-        return this.termsAgreedAt != null;
+        return this.termsAgreed;
+    }
+
+    public void agreeTerms() {
+        this.termsAgreed = true;
+        this.termsAgreedAt = LocalDateTime.now();
     }
 }

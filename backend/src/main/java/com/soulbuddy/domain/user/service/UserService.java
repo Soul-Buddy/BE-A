@@ -1,15 +1,13 @@
 package com.soulbuddy.domain.user.service;
 
+import com.soulbuddy.domain.user.dto.UserProfileResponse;
+import com.soulbuddy.domain.user.dto.UserProfileUpdateRequest;
+import com.soulbuddy.global.enums.Gender; // 1. 글로벌 패키지 import 로 변경
 import com.soulbuddy.domain.user.entity.User;
 import com.soulbuddy.domain.user.repository.UserRepository;
-import com.soulbuddy.global.enums.Provider;
-import com.soulbuddy.global.exception.BusinessException;
-import com.soulbuddy.global.response.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,27 +16,31 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_001));
-    }
+    public UserProfileResponse getProfile(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public Optional<User> findByProviderAndProviderId(Provider provider, String providerId) {
-        return userRepository.findByProviderAndProviderId(provider, providerId);
+        return UserProfileResponse.builder()
+                .nickname(user.getNickname())
+                .gender(user.getGender().name())
+                .job(user.getJob())
+                .ageGroup(user.getAgeGroup())
+                .profileImageUrl(user.getProfileImageUrl())
+                .dailyCheckInAlarm(user.isDailyCheckInAlarm())
+                .cheerMessageAlarm(user.isCheerMessageAlarm())
+                .build();
     }
 
     @Transactional
-    public User createUser(String email, String nickname, Provider provider, String providerId) {
-        User user = User.builder()
-                .email(email)
-                .nickname(nickname)
-                .provider(provider)
-                .providerId(providerId)
-                .build();
-        return userRepository.save(user);
+    public void updateProfile(Long userId, UserProfileUpdateRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        user.setNickname(request.getNickname());
+        user.setGender(Gender.valueOf(request.getGender().toUpperCase()));
+
+        user.setJob(request.getJob());
+        user.setAgeGroup(request.getAgeGroup());
+        user.setDailyCheckInAlarm(request.isDailyCheckInAlarm());
+        user.setCheerMessageAlarm(request.isCheerMessageAlarm());
     }
 }
