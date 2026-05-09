@@ -1,5 +1,10 @@
 package com.soulbuddy.global.enums;
 
 public enum PreferredTone {
-    CASUAL, FORMAL, EMPATHETIC
+    FRIEND,
+    COUNSELOR;
+
+    public PersonaType toPersonaType() {
+        return this == FRIEND ? PersonaType.FRIEND : PersonaType.COUNSELOR;
+    }
 }

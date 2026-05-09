@@ -3,14 +3,7 @@ spring:
     active: local
   application:
     name: soul-buddy
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID}
-            client-secret: ${GOOGLE_CLIENT_SECRET}
-            scope: openid, profile, email
+  # OAuth2 client registration은 준영 영역(domain/auth)에서 관리 — 지훈 dev 환경에서는 제거.
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -28,17 +21,39 @@ spring:
 server:
   port: ${SERVER_PORT:8080}
 
-ai:
-  clovax:
-    api-key: ${CLOVAX_API_KEY}
-    base-url: https://clovastudio.stream.ntruss.com/v1
-    model: HCX-003
-    timeout-seconds: 30
-    max-retries: 2
+clova:
+  api-key: ${CLOVA_API_KEY}
+  host: ${CLOVA_HOST:https://clovastudio.stream.ntruss.com}
+  timeout-seconds: 30
+  max-retries: 2
+  request-id:
+    persona-friend: ${CLOVA_REQUEST_ID_PERSONA_FRIEND:c91d3c49132a4ea099b9d5e1621d061b}
+    persona-counselor: ${CLOVA_REQUEST_ID_PERSONA_COUNSELOR:d55c5205fc904a658869e1a784890db2}
+    classify-emotion: ${CLOVA_REQUEST_ID_CLASSIFY_EMOTION:94097c95cde6471d91ef092137dff791}
+    classify-risk: ${CLOVA_REQUEST_ID_CLASSIFY_RISK:50a7543dbd91450eb873db0175289d50}
+    classify-intervention: ${CLOVA_REQUEST_ID_CLASSIFY_INTERVENTION:23087604c0d0418f8e86418b77c6f90b}
+    summary: ${CLOVA_REQUEST_ID_SUMMARY:soul-buddy-summary-default}
+  endpoint:
+    persona-friend: ${CLOVA_HCX005_FRIEND_ENDPOINT:/v3/chat-completions/HCX-005}
+    persona-counselor: ${CLOVA_HCX005_COUNSELOR_ENDPOINT:/v3/chat-completions/HCX-005}
+    summary: ${CLOVA_HCX007_ENDPOINT:/v3/chat-completions/HCX-007}
+    classify-emotion: ${CLOVA_DASH002_EMOTION_ENDPOINT:/v3/chat-completions/HCX-DASH-002}
+    classify-risk: ${CLOVA_DASH002_RISK_ENDPOINT:/v3/chat-completions/HCX-DASH-002}
+    classify-intervention: ${CLOVA_DASH002_INTERVENTION_ENDPOINT:/v3/chat-completions/HCX-DASH-002}
+
+soulbuddy:
+  prompt:
+    system-prompts-path: ${SYSTEM_PROMPTS_PATH:classpath:prompts/system_prompts_final.txt}
+  safety:
+    forced-safety-threshold: 2
+  rag:
+    enabled: ${RAG_ENABLED:false}
+    vector-store-type: ${VECTOR_STORE_TYPE:NONE}
+    vector-store-url: ${VECTOR_STORE_URL:}
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration-ms: 86400000  # 24h
+  secret: ${JWT_SECRET:soul-buddy-default-jwt-secret-please-change-me-32bytes-minimum}
+  expiration-ms: 86400000
 
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:3000}

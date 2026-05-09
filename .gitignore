@@ -8,6 +8,9 @@
 **/.gradle/
 **/*.class
 
+# 중복 gradle wrapper 폴더 (backend/gradle/wrapper/ 가 정상 위치)
+backend/gradle/gradle/
+
 # IDE 설정
 **/.idea/
 **/*.iml
@@ -21,8 +24,15 @@ Thumbs.db
 /CLAUDE.md
 **/backend_CLAUDE.md
 **/frontend_CLAUDE.md
+/frontend_test_readme.md
 /docs/
+/finetuning/
+/frontend_jihun_temp/
 /frontend/
+
+# Swagger — BE-A 범위 외 파일 및 생성 산출물 제외
+swagger/SoulBuddy_API_v4.0.0.json
+
 
 # 로컬 전용 로그/임시 파일
 *.log

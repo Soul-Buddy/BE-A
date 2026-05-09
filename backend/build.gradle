@@ -51,6 +51,9 @@ dependencies {
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // .env 파일 자동 로드 (팀원과 .env 공유, .gitignore 처리)
+    implementation 'me.paulschwarz:spring-dotenv:4.0.0'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'

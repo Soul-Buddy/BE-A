@@ -1,7 +1,6 @@
 package com.soulbuddy.global.config;
 
 import com.soulbuddy.global.auth.JwtAuthenticationFilter;
-import com.soulbuddy.global.auth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,17 +19,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
     private static final String[] PUBLIC_URLS = {
             "/api/health",
-            "/api/auth/**",
-            "/api/personas",
+            "/api/dev/**",
             "/api-docs/**",
             "/swagger-ui/**",
-            "/swagger-ui.html",
-            "/oauth2/**",
-            "/login/oauth2/**"
+            "/swagger-ui.html"
     };
 
     @Bean
@@ -44,9 +39,6 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

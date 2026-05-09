@@ -13,22 +13,27 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${ai.clovax.api-key}")
-    private String clovaxApiKey;
+    @Value("${clova.api-key}")
+    private String clovaApiKey;
 
-    @Value("${ai.clovax.base-url}")
-    private String clovaxBaseUrl;
+    @Value("${clova.host}")
+    private String clovaHost;
 
     @Bean
-    public WebClient clovaxWebClient() {
+    public WebClient clovaWebClient() {
         HttpClient httpClient = HttpClient.create()
                 .resolver(DefaultAddressResolverGroup.INSTANCE);
 
+        String authValue = clovaApiKey != null && clovaApiKey.startsWith("Bearer ")
+                ? clovaApiKey
+                : "Bearer " + clovaApiKey;
+
         return WebClient.builder()
                 .clientConnector(new ReactorClientHttpConnector(httpClient))
-                .baseUrl(clovaxBaseUrl)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + clovaxApiKey)
+                .baseUrl(clovaHost)
+                .defaultHeader(HttpHeaders.AUTHORIZATION, authValue)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .codecs(c -> c.defaultCodecs().maxInMemorySize(2 * 1024 * 1024))
                 .build();
     }
 }
