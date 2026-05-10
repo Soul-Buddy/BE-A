@@ -1,0 +1,44 @@
+on:
+  pull_request:
+    branches: [ "dev", "main" ]
+
+# 추가된 부분: 이 파일의 모든 실행 명령은 기본적으로 backend 폴더 안에서 실행됨
+defaults:
+  run:
+    working-directory: ./backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 (Corretto)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          cache: 'gradle'
+          # 캐시도 backend 폴더의 build.gradle을 기준으로 잡아야 합니다.
+          cache-dependency-path: './backend/build.gradle'
+
+      - name: Make application.yml
+        run: |
+          mkdir -p ./src/main/resources
+          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build & Test with Gradle
+        run: ./gradlew build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          # 경로 앞에 backend/ 를 붙여주거나 working-directory 영향 하에 있도록 설정
+          path: backend/build/libs/*[!plain].jar
+          if-no-files-found: error
