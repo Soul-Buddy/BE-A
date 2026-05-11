@@ -21,8 +21,20 @@ Thumbs.db
 /CLAUDE.md
 **/backend_CLAUDE.md
 **/frontend_CLAUDE.md
+/frontend_test_readme.md
 /docs/
+/finetuning/
+/frontend_jihun_temp/
 /frontend/
+
+# Swagger — 구버전·생성 산출물 제외
+swagger/gangwon-SoulBuddy__API-3.0.0-resolved.json
+swagger/dynamic-html-documentation-generated.zip
+swagger/main.js
+swagger/package.json
+swagger/docs/
+swagger/.swagger-codegen/
+swagger/.swagger-codegen-ignore
 
 # 로컬 전용 로그/임시 파일
 *.log
