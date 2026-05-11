@@ -58,7 +58,9 @@ public class AiDevController {
 
     @PostMapping("/summarize")
     public ApiResponse<SummaryResult> summarize(@Valid @RequestBody SummarizeRequest body) {
-        SummaryResult result = aiSummaryService.summarize(body.getMessages());
+        String sessionId = body.getSessionId() != null ? body.getSessionId() : "dev-test-session";
+        Long userId = body.getUserId() != null ? body.getUserId() : 0L;
+        SummaryResult result = aiSummaryService.summarize(sessionId, userId, body.getMessages());
         return ApiResponse.success(result);
     }
 
@@ -77,6 +79,8 @@ public class AiDevController {
     @Setter
     @NoArgsConstructor
     public static class SummarizeRequest {
+        private String sessionId;
+        private Long userId;
         private List<ChatMessageDto> messages;
     }
 }

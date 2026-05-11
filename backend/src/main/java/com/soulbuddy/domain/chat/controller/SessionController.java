@@ -10,6 +10,8 @@ import com.soulbuddy.domain.chat.dto.response.SessionListResponse;
 import com.soulbuddy.domain.chat.service.SessionService;
 import com.soulbuddy.domain.user.service.ProfileQueryService;
 import com.soulbuddy.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
+@Tag(name = "Session", description = "채팅 세션")
 @RestController
 @RequestMapping("/api/sessions")
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class SessionController {
     private final SessionService sessionService;
     private final ProfileQueryService profileQueryService;
 
+    @Operation(summary = "세션 목록 조회")
     @GetMapping
     public ResponseEntity<ApiResponse<SessionListResponse>> getSessions(
             @AuthenticationPrincipal String principal,
@@ -39,6 +43,7 @@ public class SessionController {
         ));
     }
 
+    @Operation(summary = "세션 삭제")
     @DeleteMapping("/{sessionId}")
     public ResponseEntity<ApiResponse<SessionDeleteResponse>> deleteSession(
             @AuthenticationPrincipal String principal,
@@ -51,6 +56,7 @@ public class SessionController {
         ));
     }
 
+    @Operation(summary = "세션 생성")
     @PostMapping
     public ResponseEntity<ApiResponse<SessionCreateResponse>> createSession(
             @AuthenticationPrincipal String principal,
@@ -64,6 +70,7 @@ public class SessionController {
         ));
     }
 
+    @Operation(summary = "세션 종료 (AI 요약 생성)")
     @PatchMapping("/{sessionId}/end")
     public ResponseEntity<ApiResponse<SessionEndResponse>> endSession(
             @AuthenticationPrincipal String principal,
@@ -76,6 +83,7 @@ public class SessionController {
         ));
     }
 
+    @Operation(summary = "채팅 전 감정 선택")
     @PatchMapping("/{sessionId}/pre-chat-emotion")
     public ResponseEntity<ApiResponse<PreChatEmotionResponse>> updatePreChatEmotion(
             @AuthenticationPrincipal String principal,

@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SafetyService {
+public class SafetyService implements SafetyEventService {
 
     private final SafetyEventRepository safetyEventRepository;
 

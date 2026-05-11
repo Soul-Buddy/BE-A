@@ -16,6 +16,7 @@ import com.soulbuddy.domain.chat.dto.response.SessionCreateResponse;
 import com.soulbuddy.domain.chat.repository.ChatMessageRepository;
 import com.soulbuddy.domain.chat.repository.ChatSessionRepository;
 import com.soulbuddy.domain.emotion.service.EmotionLogService;
+import com.soulbuddy.domain.summary.dto.SummaryCardDto;
 import com.soulbuddy.global.enums.*;
 import com.soulbuddy.global.exception.BusinessException;
 import com.soulbuddy.global.response.ErrorCode;
@@ -26,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -101,9 +104,12 @@ public class SessionService {
                     .findByUserIdAndDeletedAtIsNullOrderByStartedAtDesc(userId, pageable);
         }
 
+        List<String> sessionIds = sessionPage.getContent().stream().map(ChatSession::getId).toList();
+        Map<String, SummaryCardDto> cardMap = summaryService.findSummaryCardsBySessionIds(sessionIds);
+
         List<SessionItemResponse> items = sessionPage.getContent().stream()
                 .map(s -> {
-                    var card = summaryService.findSummaryCardBySessionId(s.getId());
+                    var card = Optional.ofNullable(cardMap.get(s.getId()));
                     return SessionItemResponse.builder()
                             .sessionId(s.getId())
                             .personaType(s.getPersonaType())
@@ -111,9 +117,9 @@ public class SessionService {
                             .status(s.getStatus())
                             .preChatEmotion(s.getPreChatEmotion())
                             .summaryStatus(s.getSummaryStatus())
-                            .quoteText(card.map(c -> c.getQuoteText()).orElse(null))
-                            .dominantEmotion(card.map(c -> c.getDominantEmotion()).orElse(null))
-                            .emotionChange(card.map(c -> c.getEmotionChange()).orElse(null))
+                            .quoteText(card.map(SummaryCardDto::getQuoteText).orElse(null))
+                            .dominantEmotion(card.map(SummaryCardDto::getDominantEmotion).orElse(null))
+                            .emotionChange(card.map(SummaryCardDto::getEmotionChange).orElse(null))
                             .startedAt(s.getStartedAt())
                             .endedAt(s.getEndedAt())
                             .build();
@@ -162,7 +168,7 @@ public class SessionService {
                         .build())
                 .toList();
 
-        SummaryResult result = aiSummaryService.summarize(messageDtos);
+        SummaryResult result = aiSummaryService.summarize(sessionId, userId, messageDtos);
 
         session.end(SummaryStatus.CREATED);
 

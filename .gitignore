@@ -30,9 +30,6 @@ Thumbs.db
 /frontend_jihun_temp/
 /frontend/
 
-# Swagger — BE-A 범위 외 파일 및 생성 산출물 제외
-swagger/SoulBuddy_API_v4.0.0.json
-
 
 # 로컬 전용 로그/임시 파일
 *.log

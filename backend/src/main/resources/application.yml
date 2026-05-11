@@ -15,7 +15,7 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
 server:
@@ -29,9 +29,9 @@ clova:
   request-id:
     persona-friend: ${CLOVA_REQUEST_ID_PERSONA_FRIEND:c91d3c49132a4ea099b9d5e1621d061b}
     persona-counselor: ${CLOVA_REQUEST_ID_PERSONA_COUNSELOR:d55c5205fc904a658869e1a784890db2}
-    classify-emotion: ${CLOVA_REQUEST_ID_CLASSIFY_EMOTION:94097c95cde6471d91ef092137dff791}
-    classify-risk: ${CLOVA_REQUEST_ID_CLASSIFY_RISK:50a7543dbd91450eb873db0175289d50}
-    classify-intervention: ${CLOVA_REQUEST_ID_CLASSIFY_INTERVENTION:23087604c0d0418f8e86418b77c6f90b}
+    classify-emotion: ${CLOVA_REQUEST_ID_CLASSIFY_EMOTION:ea1ec5c926ad44bc88bff3e58f78a3cb}
+    classify-risk: ${CLOVA_REQUEST_ID_CLASSIFY_RISK:f37e452b8e9f4731b2a68e11b3cdb960}
+    classify-intervention: ${CLOVA_REQUEST_ID_CLASSIFY_INTERVENTION:edaf62fa2a674e93bde2402110b203ab}
     summary: ${CLOVA_REQUEST_ID_SUMMARY:soul-buddy-summary-default}
   endpoint:
     persona-friend: ${CLOVA_HCX005_FRIEND_ENDPOINT:/v3/chat-completions/HCX-005}

@@ -40,7 +40,8 @@ public class PersonaLlmClient {
         messages.add(Map.of("role", "system", "content", systemPrompt));
         if (recentTurns != null) {
             for (PromptContext.TurnMessage t : recentTurns) {
-                messages.add(Map.of("role", t.getRole(), "content", t.getContent()));
+                String role = t.getRole() != null ? t.getRole().toLowerCase() : "user";
+                messages.add(Map.of("role", role, "content", t.getContent() != null ? t.getContent() : ""));
             }
         }
         messages.add(Map.of("role", "user", "content", userMessage));
