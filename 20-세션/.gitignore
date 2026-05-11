@@ -1,0 +1,44 @@
+# 로컬 환경 설정 (민감 정보 포함, 절대 커밋 금지)
+**/application-local.yml
+**/.env
+**/.env.local
+
+# 빌드 결과물
+**/build/
+**/.gradle/
+**/*.class
+
+# 중복 gradle wrapper 폴더 (backend/gradle/wrapper/ 가 정상 위치)
+backend/gradle/gradle/
+
+# IDE 설정
+**/.idea/
+**/*.iml
+**/.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 로컬 전용 문서 (바이브코딩용, 레포에 올리지 않음)
+backend/docs/
+backend/01_api_contract.md
+/CLAUDE.md
+**/backend_CLAUDE.md
+**/frontend_CLAUDE.md
+/frontend_test_readme.md
+/docs/
+/finetuning/
+/frontend_jihun_temp/
+/frontend/
+
+# Swagger — BE-A 범위 외 파일 및 생성 산출물 제외
+swagger/SoulBuddy_API_v4.0.0.json
+
+
+# 로컬 전용 로그/임시 파일
+*.log
+error*.txt
+
+# Claude Code 로컬 설정
+.claude/

@@ -1,0 +1,66 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: soul-buddy
+  # OAuth2 client registration은 준영 영역(domain/auth)에서 관리 — 지훈 dev 환경에서는 제거.
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+server:
+  port: ${SERVER_PORT:8080}
+
+clova:
+  api-key: ${CLOVA_API_KEY}
+  host: ${CLOVA_HOST:https://clovastudio.stream.ntruss.com}
+  timeout-seconds: 30
+  max-retries: 2
+  request-id:
+    persona-friend: ${CLOVA_REQUEST_ID_PERSONA_FRIEND:c91d3c49132a4ea099b9d5e1621d061b}
+    persona-counselor: ${CLOVA_REQUEST_ID_PERSONA_COUNSELOR:d55c5205fc904a658869e1a784890db2}
+    classify-emotion: ${CLOVA_REQUEST_ID_CLASSIFY_EMOTION:ea1ec5c926ad44bc88bff3e58f78a3cb}
+    classify-risk: ${CLOVA_REQUEST_ID_CLASSIFY_RISK:f37e452b8e9f4731b2a68e11b3cdb960}
+    classify-intervention: ${CLOVA_REQUEST_ID_CLASSIFY_INTERVENTION:edaf62fa2a674e93bde2402110b203ab}
+    summary: ${CLOVA_REQUEST_ID_SUMMARY:soul-buddy-summary-default}
+  endpoint:
+    persona-friend: ${CLOVA_HCX005_FRIEND_ENDPOINT:/v3/chat-completions/HCX-005}
+    persona-counselor: ${CLOVA_HCX005_COUNSELOR_ENDPOINT:/v3/chat-completions/HCX-005}
+    summary: ${CLOVA_HCX007_ENDPOINT:/v3/chat-completions/HCX-007}
+    classify-emotion: ${CLOVA_DASH002_EMOTION_ENDPOINT:/v3/chat-completions/HCX-DASH-002}
+    classify-risk: ${CLOVA_DASH002_RISK_ENDPOINT:/v3/chat-completions/HCX-DASH-002}
+    classify-intervention: ${CLOVA_DASH002_INTERVENTION_ENDPOINT:/v3/chat-completions/HCX-DASH-002}
+
+soulbuddy:
+  prompt:
+    system-prompts-path: ${SYSTEM_PROMPTS_PATH:classpath:prompts/system_prompts_final.txt}
+  safety:
+    forced-safety-threshold: 2
+  rag:
+    enabled: ${RAG_ENABLED:false}
+    vector-store-type: ${VECTOR_STORE_TYPE:NONE}
+    vector-store-url: ${VECTOR_STORE_URL:}
+
+jwt:
+  secret: ${JWT_SECRET:soul-buddy-default-jwt-secret-please-change-me-32bytes-minimum}
+  expiration-ms: 86400000
+
+cors:
+  allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
+  frontend-url: ${FRONTEND_URL:http://localhost:3000}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
