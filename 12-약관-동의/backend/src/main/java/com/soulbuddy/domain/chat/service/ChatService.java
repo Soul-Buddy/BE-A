@@ -130,7 +130,7 @@ public class ChatService {
         try {
             return EmotionTag.valueOf(value);
         } catch (Exception e) {
-            return EmotionTag.NEUTRAL;
+            return EmotionTag.ANXIOUS;
         }
     }
 

@@ -144,7 +144,7 @@ public class SessionService {
             String line = String.format("(%s) 상황: %s / 핵심감정: %s / 감정변화: %s\n",
                     label,
                     s.getSummaryText(),
-                    s.getDominantEmotion() != null ? s.getDominantEmotion().name() : "NEUTRAL",
+                    s.getDominantEmotion() != null ? s.getDominantEmotion().name() : "ANXIOUS",
                     s.getEmotionChange() != null ? s.getEmotionChange() : "없음");
 
             if (sb.length() + line.length() > RECENT_SUMMARY_MAX_LENGTH) {
@@ -177,7 +177,7 @@ public class SessionService {
         try {
             return EmotionTag.valueOf(value);
         } catch (Exception e) {
-            return EmotionTag.NEUTRAL;
+            return EmotionTag.ANXIOUS;
         }
     }
 }

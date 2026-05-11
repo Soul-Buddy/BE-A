@@ -28,12 +28,6 @@ public class PersonaController {
                     .displayName("상담사형")
                     .description("전문적이고 체계적으로 대화해요")
                     .toneSample("그 상황에서 어떤 감정을 느끼셨나요?")
-                    .build(),
-            PersonaResponse.builder()
-                    .personaType("EMPATHY")
-                    .displayName("공감형")
-                    .description("따뜻하게 감정을 함께해요")
-                    .toneSample("정말 많이 힘드셨겠어요...")
                     .build()
     );
 

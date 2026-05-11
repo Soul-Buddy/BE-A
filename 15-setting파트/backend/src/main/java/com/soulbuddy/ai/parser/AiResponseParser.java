@@ -55,7 +55,7 @@ public class AiResponseParser {
             log.error("요약 응답 파싱 실패: {}", e.getMessage());
             return SummaryResult.builder()
                     .summaryText("요약 생성에 실패했습니다.")
-                    .dominantEmotion("NEUTRAL")
+                    .dominantEmotion("ANXIOUS")
                     .memoryHint(null)
                     .build();
         }
@@ -64,7 +64,7 @@ public class AiResponseParser {
     public ChatResponse fallback() {
         return ChatResponse.builder()
                 .assistantMessage("죄송해요, 지금 잠시 연결이 불안정해요. 잠깐 후에 다시 이야기해요.")
-                .emotionTag("NEUTRAL")
+                .emotionTag("ANXIOUS")
                 .riskLevel("LOW")
                 .memoryHint(null)
                 .recommendedAction(null)

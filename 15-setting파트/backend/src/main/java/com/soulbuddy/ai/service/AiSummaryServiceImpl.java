@@ -26,7 +26,7 @@ public class AiSummaryServiceImpl implements AiSummaryService {
 
             {
               "summaryText": "대화의 핵심 내용을 2~3문장으로 요약",
-              "dominantEmotion": "ANXIOUS | SAD | CALM | HAPPY | NEUTRAL | ANGRY 중 하나",
+              "dominantEmotion": "HAPPY | SAD | ANGRY | ANXIOUS | HURT | EMBARRASSED 중 하나",
               "memoryHint": "[사실] 객관적 상황 정보 [감정] 감정 흐름 요약 (없으면 null, 최대 200자)"
             }
 
@@ -56,7 +56,7 @@ public class AiSummaryServiceImpl implements AiSummaryService {
             log.error("요약 LLM 호출 실패: {}", e.getMessage());
             return SummaryResult.builder()
                     .summaryText("요약 생성에 실패했습니다.")
-                    .dominantEmotion("NEUTRAL")
+                    .dominantEmotion("ANXIOUS")
                     .memoryHint(null)
                     .build();
         }

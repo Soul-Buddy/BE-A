@@ -9,7 +9,7 @@ public class ChatResponse {
 
     private String assistantMessage;
 
-    /** ANXIOUS | SAD | CALM | HAPPY | NEUTRAL | ANGRY */
+    /** HAPPY | SAD | ANGRY | ANXIOUS | HURT | EMBARRASSED */
     private String emotionTag;
 
     /** LOW | MEDIUM | HIGH */

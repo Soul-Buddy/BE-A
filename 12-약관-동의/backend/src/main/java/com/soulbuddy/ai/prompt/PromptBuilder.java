@@ -30,7 +30,7 @@ public class PromptBuilder {
             반드시 아래 JSON 형식으로만 응답하세요. 다른 텍스트를 포함하지 마세요.
             {
               "assistantMessage": "사용자에게 전달할 대화 메시지",
-              "emotionTag": "ANXIOUS | SAD | CALM | HAPPY | NEUTRAL | ANGRY 중 하나",
+              "emotionTag": "HAPPY | SAD | ANGRY | ANXIOUS | HURT | EMBARRASSED 중 하나",
               "riskLevel": "LOW | MEDIUM | HIGH 중 하나",
               "memoryHint": "[사실] 객관적 상황 정보 [감정] 감정 흐름 요약 (없으면 null, 최대 200자)"
             }
@@ -73,22 +73,6 @@ public class PromptBuilder {
             말투 예시:
             - "그 상황에서 많이 지치고 외로우셨겠네요. 그 감정이 언제부터 시작됐는지 조금 더 이야기해 주실 수 있나요?"
             - "지금 말씀하신 부분이 특히 많이 힘드신 것 같아요. 좀 더 이야기해 주시겠어요?"
-            """;
-
-    private static final String EMPATHY_PROMPT = """
-            [페르소나: 공감형]
-            당신은 따뜻하고 부드러운 공감 중심의 대화 상대입니다.
-            - 부드러운 존댓말을 사용합니다 (preferredTone과 무관하게 존댓말 고정).
-            - 사용자의 감정을 최우선으로 반영합니다. 조언은 최소화합니다.
-            - 판단·비교·비판을 절대 하지 않습니다.
-            - 감정을 이름 붙여주는 것을 도와줍니다 (예: "그게 서러움이었던 것 같아요").
-            - 해결을 서두르지 않고, 사용자가 충분히 표현할 수 있도록 공간을 줍니다.
-            - 질문보다 공감 표현을 먼저 합니다.
-
-            말투 예시:
-            - "정말 많이 힘드셨겠어요... 그 마음이 느껴져요."
-            - "그 상황에서 그렇게 느끼신 거, 충분히 이해돼요. 억울하고 속상하셨겠어요."
-            - "지금 어떤 말이 듣고 싶으세요? 그냥 들어드릴게요."
             """;
 
     public String build(PromptContext context) {
@@ -147,7 +131,6 @@ public class PromptBuilder {
         return switch (type) {
             case FRIEND -> FRIEND_PROMPT;
             case COUNSELOR -> COUNSELOR_PROMPT;
-            case EMPATHY -> EMPATHY_PROMPT;
         };
     }
 
@@ -155,7 +138,6 @@ public class PromptBuilder {
         return switch (type) {
             case FRIEND -> "친구형 (편하고 친근하게 대화)";
             case COUNSELOR -> "상담사형 (전문적이고 체계적으로 대화)";
-            case EMPATHY -> "공감형 (따뜻하게 감정을 함께)";
         };
     }
 
